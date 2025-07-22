@@ -153,7 +153,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-               <img className='h-15 w-18 rounded' src="src\assets\logo-removebg.png" alt="Logo " />
+               <img className='h-15 w-18 rounded' src="logo-removebg.png" alt="Logo " />
               <h1 className="text-2xl font-bold gradient-text">Nova Coders</h1>
             </div>
             
