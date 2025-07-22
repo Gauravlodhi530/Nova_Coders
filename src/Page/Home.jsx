@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-import NeumorphicCard from "../components/NumorphicCard";
+import NeumorphicCard from '../components/NeumorphicCard';
 import NeumorphicButton from '../components/NeumorphicButton';
 import NeumorphicInput from '../components/NeumorphicInput';
 import NeumorphicSelect from '../components/NeumorphicSelect';
