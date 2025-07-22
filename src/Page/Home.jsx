@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 
-import NeumorphicCard from "../components/neumorphicCard";
-import NeumorphicButton from '../components/neumorphicButton';
-import NeumorphicInput from '../components/neumorphicInput';
-import NeumorphicSelect from '../components/neumorphicSelect';
-import TeamCard from '../components/teamCard';
-import EventCard from '../components/eventCard';
+import NeumorphicCard from "../components/NumorphicCard";
+import NeumorphicButton from '../components/NeumorphicButton';
+import NeumorphicInput from '../components/NeumorphicInput';
+import NeumorphicSelect from '../components/NeumorphicSelect';
+import TeamCard from '../components/TeamCard';
+import EventCard from '../components/EventCard';
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
