@@ -1,22 +1,36 @@
-import React, { Suspense } from 'react';
-const Footer = React.lazy(() => import("./components/Footer"));
-const Nav = React.lazy(() => import("./components/Nav"));
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { initializeAuth } from "./store/authSlice";
+import Navbar from "./components/Nav";
 import MainRoutes from "./routes/MainRoutes";
-import LoadingScreen from './components/ui/LoadingScreen';
+import Footer from "./components/Footer";
 
-const App = () => {
+function App() {
+  const location = useLocation();
+  const dispatch = useDispatch();
+
+  // Initialize auth state on app start
+  useEffect(() => {
+    dispatch(initializeAuth());
+  }, [dispatch]);
+
+  // Scroll to top on route change for specific routes only
+  useEffect(() => {
+    // Only scroll to top for auth-related routes
+    const routesToScrollTop = ['/login', '/signup', '/auth', '/register'];
+    if (routesToScrollTop.includes(location.pathname)) {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
+
   return (
-    <div className="min-h-screen  text-gray-100 bg-gradient-to-br from-[#030712] via-[#0c1329] to-[#232a46] relative ">
-      {/* <div className="relative h-screen w-[100%] bg-[#030713] ">
-        <div className="absolute bottom-0 left-[-20%] right-0 top-[-10%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.15),rgba(255,255,255,0))]"></div>
-        <div className="absolute bottom-0 right-[-0%] top-[-10%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(255,0,182,.15),rgba(255,255,255,0))] overflow-hidden"></div> */}
-      <Suspense fallback={<div className="p-4 text-center"> <LoadingScreen /></div>}>
-        <Nav />
-        <MainRoutes />
-        <Footer />
-      </Suspense>
+    <div>
+      <Navbar />
+      <MainRoutes />
+      <Footer />
     </div>
   );
-};
+}
 
 export default App;

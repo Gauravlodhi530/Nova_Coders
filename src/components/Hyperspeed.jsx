@@ -45,14 +45,21 @@ const Hyperspeed = ({
   const appRef = useRef(null);
 
   useEffect(() => {
+    // Clean up previous instance
     if (appRef.current) {
       appRef.current.dispose();
-      const container = document.getElementById('lights');
-      if (container) {
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
-      }
+      appRef.current = null;
+    }
+    
+    const container = document.getElementById('lights');
+    if (!container) {
+      console.warn('Hyperspeed: Container with ID "lights" not found');
+      return;
+    }
+    
+    // Clear container
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
     }
 
     const mountainUniforms = {
@@ -541,7 +548,7 @@ const Hyperspeed = ({
         }
 
         if (this.options.isHyper) {
-          console.log(this.options.isHyper);
+          // no-op
         }
       }
 
@@ -1074,19 +1081,40 @@ const Hyperspeed = ({
       return needResize;
     }
 
-    (function() {
+    // Initialize the app
+    const initializeApp = () => {
       const container = document.getElementById('lights');
-      const options = { ...effectOptions };
-      options.distortion = distortions[options.distortion];
+      if (!container) {
+        console.warn('Hyperspeed: Container with ID "lights" not found during initialization');
+        return;
+      }
 
-      const myApp = new App(container, options);
-      appRef.current = myApp;
-      myApp.loadAssets().then(myApp.init);
-    })();
+      try {
+        const options = { ...effectOptions };
+        options.distortion = distortions[options.distortion];
+
+        const myApp = new App(container, options);
+        appRef.current = myApp;
+        myApp.loadAssets().then(() => {
+          if (appRef.current) {
+            myApp.init();
+          }
+        }).catch(error => {
+          console.error('Hyperspeed: Failed to load assets:', error);
+        });
+      } catch (error) {
+        console.error('Hyperspeed: Failed to initialize:', error);
+      }
+    };
+
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(initializeApp, 100);
 
     return () => {
+      clearTimeout(timeoutId);
       if (appRef.current) {
         appRef.current.dispose();
+        appRef.current = null;
       }
     };
   }, [effectOptions]);

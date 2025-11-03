@@ -1,131 +1,109 @@
 import React, { useState } from 'react';
 import Button from './ui/Button';
 import InputField from './ui/InputField';
+import { memberAPI } from '../utils/api';
 
-// Simple select component using existing InputField styling
-const FormSelect = ({ 
-  label, 
-  options, 
-  value, 
-  onChange, 
-  error,
-  required = false,
-  placeholder = 'Select an option'
-}) => {
-  return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-300">
-        {label} {required && <span className="text-red-400">*</span>}
-      </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`py-2 px-2 w-full bg-transparent border-b-2 border-gray-400 text-white focus:outline-none focus:border-[#60a5fa] transition-all duration-300 rounded-xl ${
-          error ? "border-red-500 focus:ring-red-500" : ""
-        }`}
-      >
-        <option value="" disabled>{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value} className="bg-gray-800">
-            {option.label}
-          </option>
-        ))}
-      </select>
-      {error && (
-        <p className="text-sm text-red-400 mt-1">{error}</p>
-      )}
-    </div>
-  );
+const FormSelect = ({ label, options, value, onChange, error, required = false, placeholder = 'Select an option' }) => (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-300">
+      {label} {required && <span className="text-red-400">*</span>}
+    </label>
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className={`py-2 px-2 w-full bg-transparent border-b-2 border-gray-400 text-white focus:outline-none focus:border-[#60a5fa] transition-all duration-300 rounded-xl ${
+        error ? "border-red-500 focus:ring-red-500" : ""
+      }`}
+    >
+      <option value="" disabled>{placeholder}</option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value} className="bg-gray-800">
+          {option.label}
+        </option>
+      ))}
+    </select>
+    {error && <p className="text-sm text-red-400 mt-1">{error}</p>}
+  </div>
+);
+
+const initialFormData = {
+  fullName: '', email: '', phone: '', university: '', year: '', 
+  interests: '', motivation: '', experience: '', github: '', linkedin: '', newsletter: false
 };
 
-// Main JoinCommunityForm component
-const JoinCommunityForm = () => {
-  // Simplified form state
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    university: '',
-    year: '',
-    interests: '',
-    motivation: '',
-    experience: '',
-    github: '',
-    linkedin: '',
-    newsletter: false
-  });
+const yearOptions = [
+  { value: '1st', label: '1st Year' },
+  { value: '2nd', label: '2nd Year' },
+  { value: '3rd', label: '3rd Year' },
+  { value: '4th', label: '4th Year' },
+  { value: 'graduate', label: 'Graduate' },
+  { value: 'other', label: 'Other' }
+];
 
+const experienceOptions = [
+  { value: 'beginner', label: 'Beginner (0-1 years)' },
+  { value: 'intermediate', label: 'Intermediate (1-3 years)' },
+  { value: 'advanced', label: 'Advanced (3+ years)' },
+  { value: 'professional', label: 'Professional (5+ years)' }
+];
+
+const JoinCommunityForm = () => {
+  const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
-  // Static options - no need for useMemo for simple arrays
-  const yearOptions = [
-    { value: '1st', label: '1st Year' },
-    { value: '2nd', label: '2nd Year' },
-    { value: '3rd', label: '3rd Year' },
-    { value: '4th', label: '4th Year' },
-    { value: 'graduate', label: 'Graduate' },
-    { value: 'other', label: 'Other' }
-  ];
-
-  const experienceOptions = [
-    { value: 'beginner', label: 'Beginner (0-1 years)' },
-    { value: 'intermediate', label: 'Intermediate (1-3 years)' },
-    { value: 'advanced', label: 'Advanced (3+ years)' },
-    { value: 'professional', label: 'Professional (5+ years)' }
-  ];
-
-  // Simplified validation function
   const validateForm = () => {
     const newErrors = {};
+    const requiredFields = {
+      fullName: 'Full name is required',
+      email: 'Email is required',
+      phone: 'Phone number is required',
+      university: 'University name is required',
+      year: 'Please select your year',
+      interests: 'Tech interests required',
+      motivation: 'Motivation required',
+      experience: 'Experience level required'
+    };
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!formData.university.trim()) newErrors.university = 'University name is required';
-    if (!formData.year) newErrors.year = 'Please select your year';
-    if (!formData.interests.trim()) newErrors.interests = 'Tech interests required';
-    if (!formData.motivation.trim()) newErrors.motivation = 'Motivation required';
-    if (!formData.experience) newErrors.experience = 'Experience level required';
+    Object.entries(requiredFields).forEach(([field, message]) => {
+      if (!formData[field]?.trim?.() && !formData[field]) {
+        newErrors[field] = message;
+      }
+    });
+
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Simple input change handler
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
-  // Simplified form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     setSubmitStatus(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Form submitted:', formData);
+      const result = await memberAPI.register(formData);
       
-      setSubmitStatus('success');
-      // Reset form
-      setFormData({
-        fullName: '', email: '', phone: '', university: '',
-        year: '', interests: '', motivation: '', experience: '',
-        github: '', linkedin: '', newsletter: false
-      });
-      
+      if (result.success) {
+        setSubmitStatus('success');
+        setFormData(initialFormData);
+      } else {
+        console.error('Registration failed:', result.error);
+        setSubmitStatus('error');
+      }
     } catch (error) {
-      console.error('Submission error:', error);
+      console.error('Registration error:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -270,18 +248,19 @@ const JoinCommunityForm = () => {
 
 
         {/* Submit Status Messages */}
-        {submitStatus === 'success' && (
-          <div className="bg-green-900/50 border border-green-500 rounded-lg p-4">
-            <p className="text-green-400 font-medium">
-              🎉 Welcome to Nova Coders! Your application has been submitted successfully.
-            </p>
-          </div>
-        )}
-
-        {submitStatus === 'error' && (
-          <div className="bg-red-900/50 border border-red-500 rounded-lg p-4">
-            <p className="text-red-400 font-medium">
-              ❌ Something went wrong. Please try again later.
+        {submitStatus && (
+          <div className={`border rounded-lg p-4 ${
+            submitStatus === 'success' 
+              ? 'bg-green-900/50 border-green-500' 
+              : 'bg-red-900/50 border-red-500'
+          }`}>
+            <p className={`font-medium ${
+              submitStatus === 'success' ? 'text-green-400' : 'text-red-400'
+            }`}>
+              {submitStatus === 'success' 
+                ? '🎉 Welcome to Nova Coders! Your application has been submitted successfully.'
+                : '❌ Something went wrong. Please try again later.'
+              }
             </p>
           </div>
         )}

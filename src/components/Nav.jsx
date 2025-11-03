@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Button from "./ui/Button";
+import LogoutButton from "./LogoutButton";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -64,17 +67,23 @@ const Navbar = () => {
             }>
               Services
             </NavLink>
-            <NavLink to="/team" className={({ isActive }) =>
+            <NavLink to="/portfolio" className={({ isActive }) =>
               `hover:text-emerald-400 transition-colors ${
                 isActive ? "text-emerald-500 font-semibold" : ""
               }`
             }>
-              Team
+              Portfolio
             </NavLink>
 
-            <NavLink to="/signup">
-              <Button variant="primary">Sign Up</Button>
-            </NavLink>
+            {isAuthenticated ? (
+              <LogoutButton className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                Logout
+              </LogoutButton>
+            ) : (
+              <NavLink to="/auth">
+                <Button variant="primary">Sign In</Button>
+              </NavLink>
+            )}
           </div>
 
           <div className="md:hidden flex items-center">
@@ -107,12 +116,20 @@ const Navbar = () => {
           <Link to="/services" className="block px-3 py-2 rounded hover:bg-slate-800">
             Services
           </Link>
-          <Link to="/team" className="block px-3 py-2 rounded hover:bg-slate-800">
-            Team
+          <Link to="/portfolio" className="block px-3 py-2 rounded hover:bg-slate-800">
+            Portfolio
           </Link>
-          <Link to="/signup" className="block px-3 py-2">
-            <Button variant="primary">Sign Up</Button>
-          </Link>
+          {isAuthenticated ? (
+            <div className="block px-3 py-2">
+              <LogoutButton className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                Logout
+              </LogoutButton>
+            </div>
+          ) : (
+            <Link to="/auth" className="block px-3 py-2">
+              <Button variant="primary">Sign In</Button>
+            </Link>
+          )}
         </div>
       )}
     </nav>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ElectricBorder from "./ElectricBorder";
 import LazyJoinCommunityForm from "./LazyJoinCommunityForm";
 import Button from "./ui/Button";
 import { AnimatePresence, motion } from "framer-motion";
@@ -20,23 +19,20 @@ const JoinNow = () => {
       {/* Grid background pattern */}
       <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
-      {/* Electric Border Header Section */}
+      {/* Header Section with Simple Border */}
       <div className="relative z-10 mb-12">
-        <ElectricBorder
-          color="#7df9ff"
-          speed={1}
-          chaos={0.5}
-          thickness={3}
-          style={{ borderRadius: 16 }}
-          className="mx-8 md:mx-8 p-2"
+        <div
+          className="mx-8 md:mx-8 bg-slate-900/50 backdrop-blur-sm rounded-2xl"
+          style={{ border: "3px solid #67e8f9" }}
         >
-          <div className="p-8 text-center backdrop-blur-sm">
+          <div className="p-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Ready to Join Nova Coders?
             </h1>
             <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto">
-              Be part of a vibrant community of tech enthusiasts, innovators, and future leaders. 
-              Fill out the form below to get started on your journey with us.
+              Be part of a vibrant community of tech enthusiasts, innovators,
+              and future leaders. Fill out the form below to get started on your
+              journey with us.
             </p>
             <div className="mt-6 flex justify-center">
               <div className="flex items-center space-x-4 text-cyan-400">
@@ -54,9 +50,15 @@ const JoinNow = () => {
                 </span>
               </div>
             </div>
-              <Button variant="primary" className="mt-10 px-15 py-5" onClick={handleJoinNowClick}>Join Now</Button>
+            <Button
+              variant="primary"
+              className="mt-10 px-15 py-5"
+              onClick={handleJoinNowClick}
+            >
+              Join Now
+            </Button>
           </div>
-        </ElectricBorder>
+        </div>
       </div>
 
       {/* Full Screen Modal */}

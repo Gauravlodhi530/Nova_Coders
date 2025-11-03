@@ -85,14 +85,14 @@ const Carousel_003 = ({
   const css = `
   .Carousal_003 {
     width: 100%;
-    height: 350px;
+    height: 400px;
     padding-bottom: 50px !important;
   }
   
   .Carousal_003 .swiper-slide {
     background-position: center;
     background-size: cover;
-    width: 300px;
+    width: 400px;
     background: #red;
   }
       /* Target the slide shadow specifically to control the darkness */

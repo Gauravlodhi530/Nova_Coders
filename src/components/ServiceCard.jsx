@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const ServiceCard = ({ imageSrc, title, description, buttonLink }) => (
+const ServiceCard = ({ imageSrc, title, description, buttonLink, icon }) => (
   <div
     className="relative group bg-gradient-to-br from-[#162636]/80 to-[#222c25]/80
                 border border-teal-700/80 rounded-xl p-6 sm:p-8
@@ -17,7 +17,18 @@ const ServiceCard = ({ imageSrc, title, description, buttonLink }) => (
                   flex items-center justify-center -mt-10 mb-4 border-4 border-teal-900
                   overflow-hidden group-hover:border-cyan-500 transition-all"
     >
-      <img src={imageSrc} alt={title} className="w-3/4 h-3/4 object-contain" />
+      {icon ? (
+        (() => {
+          const Icon = icon;
+          return <Icon className="w-8 h-8 text-cyan-400" aria-hidden="true" />;
+        })()
+      ) : (
+        <img
+          src={imageSrc}
+          alt={title}
+          className="w-3/4 h-3/4 object-contain"
+        />
+      )}
     </div>
 
     {/* Service Title */}

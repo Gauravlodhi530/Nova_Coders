@@ -24,7 +24,11 @@ const InputField = ({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      
+      {label && (
+        <label className="block text-sm font-medium text-gray-300">
+          {label}
+        </label>
+      )}
       
       <div className="relative">
         <input

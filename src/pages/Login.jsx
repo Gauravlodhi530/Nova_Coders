@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
 import InputField from "../components/ui/InputField";
+import { authAPI } from "../utils/api";
 
 const Login = () => {
+  const [loginError, setLoginError] = useState('');
+  const navigate = useNavigate();
+  
   const {
     register,
     handleSubmit,
@@ -14,18 +18,36 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Login data:", data);
+      setLoginError('');
       
-      // Show success toast (you can integrate with react-toastify)
-      alert("Login successful! Redirecting to dashboard...");
+      const result = await authAPI.login(data);
       
-      // Redirect to dashboard
-      // window.location.href = "/dashboard";
+      if (result.success) {
+        const userData = result.data.data || result.data;
+        
+        // Store user session data
+        localStorage.setItem('userEmail', userData.email || data.email);
+        localStorage.setItem('userRole', userData.role || 'user');
+        localStorage.setItem('token', userData.token || 'authenticated');
+        localStorage.setItem('userId', userData._id || userData.id);
+        
+        // Check if user is admin and redirect accordingly
+        const isAdmin = userData.role === 'admin' || 
+                       userData.email?.includes('admin') || 
+                       userData.email === 'novacoder007@gmail.com';
+        
+        if (isAdmin) {
+          localStorage.setItem('userRole', 'admin');
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
+      } else {
+        setLoginError(result.error?.message || 'Invalid credentials. Please try again.');
+      }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed. Please try again.");
+      setLoginError('Login failed. Please check your connection and try again.');
     }
   };
 
@@ -84,6 +106,18 @@ const Login = () => {
           {/* Gradient Border Effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-blue-500/20 rounded-2xl blur-sm -z-10"></div>
           
+          {/* Error Message */}
+          {loginError && (
+            <motion.div 
+              className="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-6"
+              variants={itemVariants}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <p className="text-red-400 text-center">{loginError}</p>
+            </motion.div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Email Input */}
             <motion.div variants={itemVariants}>
